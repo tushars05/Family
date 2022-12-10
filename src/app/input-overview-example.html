@@ -1,0 +1,44 @@
+<h1>Family Tree in Angular 2+</h1>
+<div style="width: max-content;">
+  <button mat-raised-button color="primary" *ngIf="!list?.length" (click)="list.push({title: 'New entry title',name: 'New entry name',children: []})">Start
+    Tree</button>
+  <div class="tree">
+    <ul>
+      <ng-template #recursiveList let-list="mList" let-mParent="mParent">
+        <li *ngFor="let item of list; let i=index;">
+          <a class="title">
+            <ng-container *ngIf="!item.editing && !item.creating;else editingZone;">
+              {{item.title}}
+              <br>
+              <span>{{item.name}}</span>
+              <br>
+              <!-- <i class="fa fa-edit"></i> -->
+              <div class="action-btns">
+                <a (click)="addChildNode(item)"><i class="fa fa-plus"></i></a>
+                <a (click)="editNode(item, i);"><i class="fa fa-pencil"></i></a>
+                <a (click)="deleteNode(item, i, mParent);"><i class="fa fa-trash"></i></a>
+              </div>
+            </ng-container>
+            <ng-template #editingZone>
+              <h2>{{item.editing ? 'Edit Details' : item.creating ? 'Create Child' : ''}}</h2>
+              <mat-form-field>
+                <input placeholder="Title" matInput name="input_title" [(ngModel)]="item.title_copy" >
+              </mat-form-field>
+              <br>
+              <mat-form-field>
+                <input matInput placeholder="Name" name="input_name" [(ngModel)]="item.name_copy"  >
+              </mat-form-field>
+              <br><br>
+              <button mat-button (click)="doneEditing(item);" >Done</button> &nbsp; 
+              <button mat-button color="warn" (click)="cancelEditing(item)" >Cancel</button>
+            </ng-template>
+          </a>
+          <ul *ngIf="item?.children?.length > 0">
+            <ng-container [ngTemplateOutlet]="recursiveList" [ngTemplateOutletContext]="{ mList: item.children, mParent: item }"></ng-container>
+          </ul>
+        </li>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="recursiveList; context:{ mList: list }"></ng-container>
+    </ul>
+  </div>
+</div>
